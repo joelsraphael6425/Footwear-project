@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Footwear List</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .container {
+        margin-top: 50px;
+      }
+      .card {
+        margin-bottom: 20px;
+      }
+      .btn-custom {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+      }
+      .btn-custom:hover {
+        background-color: #0056b3;
+      }
+      .card-img-top {
+        height: 200px;
+        object-fit: cover;
+      }
+      .quantity-input {
+        width: 100px;
+      }
+      .quantity-left {
+        color: #007bff; /* Blue color */
+        font-weight: bold; /* Optional: make it bold */
+      }
+      .total-value {
+        font-weight: bold;
+        color: #28a745; /* Green color */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Footwear Store</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="{% url 'footwear_list' %}"
+            >Home <span class="sr-only">(current)</span></a
+          >
+          <a class="nav-item nav-link" href="{% url 'add_footwear' %}"
+            >Add Footwear</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Page Content -->
+      <h1 class="text-center mb-4">Footwear List</h1>
+      <div class="row">
+        {% for footwear in footwears %}
+        <div class="col-md-3 mb-4">
+          <!-- Adjusted to col-md-3 for 4 columns per row -->
+          <div class="card">
+            <img
+              src="{{ footwear.image.url }}"
+              class="card-img-top"
+              alt="{{ footwear.name }}"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ footwear.name }}</h5>
+              <p class="card-text">Price: ₹{{ footwear.price }}</p>
+              <p class="card-text quantity-left">
+                Quantity left: {{ footwear.quantity }}
+              </p>
+              <p class="card-text total-value">
+                Total Value: ₹{{ footwear.total_value|floatformat:2 }}
+              </p>
+              <form
+                method="post"
+                action="{% url 'update_quantity' footwear.id %}"
+              >
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="quantity">Update Quantity:</label>
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    class="form-control quantity-input"
+                    min="0"
+                    value="{{ footwear.quantity }}"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-danger">Update</button>
+              </form>
+
+              <a
+                href="{% url 'sell_footwear' footwear.id %}"
+                class="btn btn-success mt-2"
+                >Sold</a
+              >
+              <a
+                href="{% url 'edit_footwear' footwear.id %}"
+                class="btn btn-primary mt-2"
+                >Edit</a
+              >
+              <a
+                href="{% url 'delete_footwear' footwear.id %}"
+                class="btn btn-danger mt-2"
+                >Delete</a
+              >
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
