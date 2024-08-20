@@ -1,0 +1,348 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      /* Full-height background with fixed positioning */
+      body {
+        font-family: Arial, sans-serif;
+        background: url('{% static "images/graphics-dreamstate-1920x1080.jpg/" %}')
+          no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        height: 100vh;
+        overflow: hidden; /* Prevent body scroll */
+      }
+
+      .container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .navbar {
+        margin-bottom: 20px;
+        background: linear-gradient(
+          135deg,
+          #486dff,
+          #6f42c1,
+          #cf98ff,
+          #ff6eb7,
+          #ffffff
+        );
+      }
+
+      .navbar-brand {
+        font-size: 20px;
+        color: #fff !important;
+      }
+
+      .navbar-nav .nav-link {
+        color: #fff !important;
+      }
+
+      .navbar-nav .nav-link.active {
+        background: linear-gradient(135deg, #ff007a, #ff8c00);
+        color: #fff !important;
+        border-radius: 5px;
+      }
+
+      .signup-container {
+        background: linear-gradient(135deg, #a09bc6, #ffffff);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin: auto;
+        max-width: 400px;
+        margin-top: 20px;
+      }
+
+      .signup-container h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+      }
+
+      .signup-container input[type="text"],
+      .signup-container input[type="email"],
+      .signup-container input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .signup-container button[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .signup-container button[type="submit"]:hover {
+        background-color: #0056b3;
+      }
+
+      .error-message {
+        color: red;
+        margin-top: 10px;
+      }
+
+      .signup-container a {
+        display: block;
+        margin-top: 10px;
+        text-align: center;
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .signup-container a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <a class="navbar-brand" href="{% url 'index' %}">Prime Footwear</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'index' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'signup' %}">
+              <i class="fas fa-user-plus"></i> Register
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'signin' %}">Login</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="signup-container">
+        <h1>Sign Up</h1>
+        <form id="signupForm" method="post">
+          {% csrf_token %}
+          <input type="text" name="username" placeholder="Username" required />
+          <input
+            type="text"
+            name="first_name"
+            placeholder="First Name"
+            required
+          />
+          <input
+            type="text"
+            name="last_name"
+            placeholder="Last Name"
+            required
+          />
+          <input type="email" name="email" placeholder="Email" required />
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Password"
+            required
+          />
+          <input
+            type="password"
+            name="password_confirm"
+            id="password_confirm"
+            placeholder="Confirm Password"
+            required
+          />
+          <button type="submit">Sign Up</button>
+          <div class="error-message" id="errorMessage"></div>
+          <a href="{% url 'signin' %}">Already have an account? Sign In</a>
+        </form>
+      </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div
+      class="modal fade"
+      id="otpModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="otpModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="otpModalLabel">Enter OTP</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="otpForm" method="post">
+              {% csrf_token %}
+              <input
+                type="email"
+                name="email"
+                id="otpEmail"
+                placeholder="Email"
+                readonly
+                required
+              />
+              <input
+                type="text"
+                name="otp_code"
+                placeholder="OTP Code"
+                required
+              />
+              <div class="otp-timer" id="otpTimer">
+                OTP expires in: 60 seconds
+              </div>
+              <button type="submit" class="btn btn-primary">Verify OTP</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancel
+              </button>
+
+              <div class="error-message" id="otpErrorMessage"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Function to get the CSRF token from the cookie
+      function getCsrfToken() {
+        const name = "csrftoken";
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const errorMessage = document.getElementById("errorMessage");
+          errorMessage.textContent = "";
+
+          const formData = new FormData(e.target);
+          const response = await fetch('{% url "signup" %}', {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "X-CSRFToken": getCsrfToken(), // Add CSRF token here
+            },
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            errorMessage.textContent = data.error;
+          } else if (data.exists) {
+            errorMessage.textContent = "Username or email already exists.";
+          } else if (data.otp_sent) {
+            // Clear any existing modal state and show the modal immediately
+            $("#otpModal").modal("hide").modal("show");
+
+            // Fill email field in OTP form and disable it
+            const otpEmailField = document.querySelector(
+              '#otpForm input[name="email"]'
+            );
+            otpEmailField.value = formData.get("email");
+            otpEmailField.setAttribute("readonly", "true");
+
+            // Reset OTP expiration countdown
+            let otpExpirationTime = 60;
+            const otpTimer = document.getElementById("otpTimer");
+            otpTimer.textContent = `OTP expires in: ${otpExpirationTime} seconds`;
+
+            clearInterval(window.otpCountdown); // Clear any existing timer
+
+            window.otpCountdown = setInterval(() => {
+              otpExpirationTime--;
+              otpTimer.textContent = `OTP expires in: ${otpExpirationTime} seconds`;
+              if (otpExpirationTime <= 0) {
+                clearInterval(window.otpCountdown);
+                otpTimer.textContent =
+                  "OTP has expired. Please request a new one.";
+              }
+            }, 1000);
+          }
+        });
+
+      document
+        .getElementById("otpForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const otpErrorMessage = document.getElementById("otpErrorMessage");
+          otpErrorMessage.textContent = "";
+
+          const formData = new FormData(e.target);
+          const response = await fetch('{% url "verify_otp" %}', {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "X-CSRFToken": getCsrfToken(), // Add CSRF token here
+            },
+          });
+
+          const data = await response.json();
+
+          if (data.verified) {
+            // Redirect to the footwear list page with a success message
+            window.location.href = "{% url 'footwear_list' %}?message=success";
+          } else {
+            otpErrorMessage.textContent = data.error || "Verification failed";
+          }
+        });
+    </script>
+  </body>
+</html>

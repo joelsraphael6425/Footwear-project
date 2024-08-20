@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bill {{ bill.bill_code }}</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .invoice-title h2,
+      .invoice-title h3 {
+        display: inline-block;
+      }
+
+      .invoice-title .shop-name {
+        text-align: center;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .invoice-title h1 {
+        color: #007bff; /* Adjust color to match your theme */
+      }
+
+      .invoice-title h2 {
+        color: #ff007a; /* Adjust color to match your theme */
+      }
+
+      .invoice-title h3 {
+        color: #ff8c00; /* Adjust color to match your theme */
+      }
+
+      .table {
+        background-color: #ffffff; /* White background for the table */
+      }
+
+      .table > tbody > tr > .no-line {
+        border-top: none;
+      }
+
+      .table > thead > tr > .no-line {
+        border-bottom: none;
+      }
+
+      .table > tbody > tr > .thick-line {
+        border-top: 2px solid #007bff; /* Border color matching your theme */
+      }
+
+      .panel-default .panel-heading {
+        background: linear-gradient(
+          135deg,
+          #007bff,
+          #ff007a
+        ); /* Gradient background */
+        color: #fff; /* Text color on gradient background */
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #007bff, #ff007a);
+        border: none;
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #ff007a);
+        border-color: #004085;
+      }
+
+      .btn-print {
+        margin-top: 20px;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .btn-print:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="invoice-title">
+            <div class="shop-name">
+              <h1>PRIME FOOTWEAR</h1>
+            </div>
+            <h2>Invoice</h2>
+            <h3 class="pull-right">Bill # {{ bill.bill_code }}</h3>
+          </div>
+          <hr />
+          <div class="row">
+            <div class="col-xs-6">
+              <address>
+                <strong>Billed To:</strong><br />
+                {{ bill.customer.name }}<br />
+                {{ bill.customer.email }}<br />
+                {{ bill.customer.phone }}
+              </address>
+            </div>
+            <div class="col-xs-6 text-right">
+              <address>
+                <strong>Order Date:</strong><br />
+                {{ bill.date }}<br />
+                {{ bill.time }}
+              </address>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><strong>Order Summary</strong></h3>
+            </div>
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th>Footwear</th>
+                      <th class="text-center">Quantity</th>
+                      <th class="text-center">Price</th>
+                      <th class="text-right">Total Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in bill.items.all %}
+                    <tr>
+                      <td>{{ item.footwear.name }}</td>
+                      <td class="text-center">{{ item.quantity }}</td>
+                      <td class="text-center">₹{{ item.price }}</td>
+                      <td class="text-right">₹{{ item.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                      <td class="thick-line"></td>
+                      <td class="thick-line"></td>
+                      <td class="thick-line text-center">
+                        <strong>Subtotal</strong>
+                      </td>
+                      <td class="thick-line text-right">
+                        ₹{{ bill.total_amount }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="no-line"></td>
+                      <td class="no-line"></td>
+                      <td class="no-line text-center">
+                        <strong>GST </strong>
+                      </td>
+                      <td class="no-line text-right">₹{{ bill.gst_amount }}</td>
+                    </tr>
+                    <tr>
+                      <td class="no-line"></td>
+                      <td class="no-line"></td>
+                      <td class="no-line text-center">
+                        <strong>Grand Total</strong>
+                      </td>
+                      <td class="no-line text-right">
+                        ₹{{ bill.grand_total }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-print" onclick="window.print()">Print Bill</button>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  </body>
+</html>

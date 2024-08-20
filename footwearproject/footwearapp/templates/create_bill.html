@@ -1,0 +1,502 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Bill</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <!-- Select2 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: url('{% static "images/graphics-dreamstate-1920x1080.jpg/" %}')
+          no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        height: 100vh;
+        overflow: hidden; /* Prevent body scroll */
+      }
+
+      .navbar {
+        margin-bottom: 20px;
+        background: linear-gradient(
+          135deg,
+          #486dff,
+          #6f42c1,
+          #cf98ff,
+          #ff6eb7,
+          #ffffff
+        );
+      }
+
+      .navbar-brand {
+        font-size: 20px;
+        color: #fff !important;
+      }
+
+      .navbar-nav .nav-link {
+        color: #fff !important;
+      }
+
+      .navbar-nav .nav-link.active {
+        background: linear-gradient(
+          135deg,
+          #ff007a,
+          #ff8c00
+        ); /* Bluish-red gradient */
+        color: #fff !important;
+        border-radius: 5px;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 50px;
+      }
+
+      .form-wrapper,
+      .selected-products {
+        width: 48%;
+        background: linear-gradient(
+          135deg,
+          #a09bc6,
+          #ffffff
+        ); /* Slightly transparent background */
+        border-radius: 5px;
+        padding: 10px; /* Decreased padding for smaller height */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-wrapper {
+        max-height: 400px; /* Optional: set a max-height if needed */
+        overflow-y: auto; /* Add scroll if content overflows */
+      }
+
+      .selected-products {
+        border: 1px solid #ddd;
+        background: linear-gradient(
+          135deg,
+          #a09bc6,
+          #ffffff
+        ); /* Semi-transparent background */
+      }
+
+      .selected-products h2 {
+        margin-top: 0;
+        color: #007bff;
+      }
+
+      .remove-btn {
+        cursor: pointer;
+        color: #dc3545;
+        border: none;
+        background: none;
+        font-size: 1rem;
+        padding: 0;
+      }
+
+      .remove-btn:hover {
+        color: #ff007a;
+      }
+
+      .error-message {
+        color: #dc3545;
+        font-size: 1rem;
+        margin-top: 20px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #007bff, #ff007a);
+        border: none;
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #ff007a);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #28a745, #ff8c00);
+        border: none;
+        color: #fff;
+      }
+
+      .btn-success:hover {
+        background: linear-gradient(135deg, #218838, #ff8c00);
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #ffc107, #ff8c00);
+        border: none;
+        color: #fff;
+      }
+
+      .btn-warning:hover {
+        background: linear-gradient(135deg, #e0a800, #ff8c00);
+      }
+
+      /* Updated form item positioning */
+      .form-wrapper .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-wrapper .form-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      #quantity {
+        width: 70%;
+        display: inline-block;
+      }
+
+      #gst {
+        width: 70%;
+        display: inline-block;
+        margin-bottom: 0;
+      }
+
+      #apply_gst {
+        margin-left: 10px;
+      }
+
+      button.btn-primary,
+      button.btn-success {
+        margin-top: 10px;
+      }
+
+      .form-wrapper {
+        position: relative;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Prime Footwear</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'footwear_list' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'add_footwear' %}">Add Footwear</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'create_bill' %}">
+              <i class="fas fa-file-invoice"></i> Create Bill
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'list_bills' %}">List Bills</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container mt-4">
+      <div class="row">
+        <!-- Form Container -->
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h2>Create Bill</h2>
+              <form method="post" id="create-bill-form">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="customer_name">Customer Name:</label>
+                  <input
+                    type="text"
+                    id="customer_name"
+                    name="customer_name"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="customer_email">Customer Email:</label>
+                  <input
+                    type="email"
+                    id="customer_email"
+                    name="customer_email"
+                    class="form-control"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="customer_phone">Customer Phone:</label>
+                  <input
+                    type="text"
+                    id="customer_phone"
+                    name="customer_phone"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="footwear">Select Footwear:</label>
+                  <select
+                    id="footwear"
+                    name="footwear"
+                    class="form-control select2"
+                  >
+                    {% for footwear in footwears %}
+                    <option
+                      value="{{ footwear.id }}"
+                      data-price="{{ footwear.price }}"
+                      data-quantity="{{ footwear.quantity }}"
+                    >
+                      {{ footwear.name }} - ₹{{ footwear.price }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="quantity">Quantity:</label>
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    class="form-control"
+                    min="1"
+                    value="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="gst">GST (%):</label>
+                  <input
+                    type="number"
+                    id="gst"
+                    name="gst"
+                    class="form-control"
+                    value="0"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="apply_gst">Apply GST:</label>
+                  <input
+                    type="checkbox"
+                    id="apply_gst"
+                    name="apply_gst"
+                    checked
+                  />
+                </div>
+
+                <button type="button" class="btn btn-primary" id="add-to-cart">
+                  Add to Cart
+                </button>
+                <button type="submit" class="btn btn-success">
+                  Generate Bill
+                </button>
+                <div
+                  class="error-message mt-3"
+                  id="error-message"
+                  style="display: none"
+                >
+                  Please add at least one product to the cart before generating
+                  the bill.
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Products Container -->
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h2>Selected Products</h2>
+              <table class="table table-striped" id="selected-products-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Selected products will be dynamically inserted here -->
+                </tbody>
+              </table>
+              <h4>Subtotal: ₹<span id="subtotal-amount">0</span></h4>
+              <h4>GST Amount: ₹<span id="gst-amount">0</span></h4>
+              <h4>Total Amount: ₹<span id="total-amount">0</span></h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $(".select2").select2();
+
+        function updateTotal() {
+          let subtotal = 0;
+          let gstRate = parseFloat($("#gst").val()) || 0;
+          let applyGst = $("#apply_gst").is(":checked");
+
+          // Calculate subtotal
+          $("#selected-products-table tbody tr").each(function () {
+            const total = parseFloat(
+              $(this).find("td:eq(3)").text().replace("₹", "")
+            );
+            subtotal += total;
+          });
+
+          // Calculate GST amount
+          let gstAmount = applyGst ? (subtotal * gstRate) / 100 : 0;
+
+          // Update the displayed amounts
+          $("#subtotal-amount").text(subtotal.toFixed(2));
+          $("#gst-amount").text(gstAmount.toFixed(2));
+          $("#total-amount").text((subtotal + gstAmount).toFixed(2));
+        }
+
+        // Function to add product to cart
+        $("#add-to-cart").click(function () {
+          const footwearId = $("#footwear").val();
+          const footwearText = $("#footwear option:selected").text();
+          const price = parseFloat(
+            $("#footwear option:selected").data("price")
+          );
+          const quantity = parseInt($("#quantity").val());
+          const total = price * quantity;
+
+          if (!footwearId) return;
+
+          const existingRow = $(
+            `#selected-products-table tbody tr[data-id="${footwearId}"]`
+          );
+
+          if (existingRow.length > 0) {
+            const currentQuantity = parseInt(
+              existingRow.find("td:eq(2)").text()
+            );
+            existingRow.find("td:eq(2)").text(currentQuantity + quantity);
+            existingRow
+              .find("td:eq(3)")
+              .text(`₹${(price * (currentQuantity + quantity)).toFixed(2)}`);
+          } else {
+            $("#selected-products-table tbody").append(`
+                        <tr data-id="${footwearId}">
+                            <td>${footwearText}</td>
+                            <td>₹${price.toFixed(2)}</td>
+                            <td>${quantity}</td>
+                            <td>₹${total.toFixed(2)}</td>
+                            <td><button class="remove-btn btn btn-danger btn-sm" data-id="${footwearId}">Remove</button></td>
+                        </tr>
+                    `);
+          }
+
+          updateTotal();
+        });
+
+        // Function to remove product from cart
+        $("#selected-products-table").on("click", ".remove-btn", function () {
+          $(this).closest("tr").remove();
+          updateTotal();
+        });
+
+        // Update total amounts when GST checkbox is toggled
+        $("#apply_gst").change(function () {
+          updateTotal();
+        });
+
+        // Update total amounts when GST value changes
+        $("#gst").keyup(function () {
+          updateTotal();
+        });
+
+        // Handle form submission
+        $("#create-bill-form").submit(function (event) {
+          const selectedProducts = [];
+          $("#selected-products-table tbody tr").each(function () {
+            const footwearId = $(this).data("id");
+            const quantity = parseInt($(this).find("td:eq(2)").text());
+            const total = parseFloat(
+              $(this).find("td:eq(3)").text().replace("₹", "")
+            );
+
+            selectedProducts.push({
+              id: footwearId,
+              quantity: quantity,
+              total: total,
+            });
+          });
+
+          if (selectedProducts.length === 0) {
+            event.preventDefault();
+            $("#error-message").show();
+          } else {
+            $("#error-message").hide();
+            $("<input>")
+              .attr({
+                type: "hidden",
+                name: "selected_products",
+                value: JSON.stringify(selectedProducts),
+              })
+              .appendTo("#create-bill-form");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
